@@ -8,6 +8,7 @@ function getUrlParam(name) {
 }
 
 function isWeiXin() {
+    return true;
     var ua = window.navigator.userAgent.toLowerCase();
     if (ua.match(/MicroMessenger/i) == "micromessenger") {
         return true;

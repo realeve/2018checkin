@@ -1,7 +1,6 @@
 <template>
   <div>
     <x-header></x-header>
-    signature:{{signature}}
     <toast v-model="toast.show" :type="toast.type">{{ toast.text }}</toast>
     <div class="vote" v-for="(item,i) in checkList" :key="item.id">
       <!-- <sticky :check-sticky-support="true">
@@ -32,13 +31,15 @@
     <div class="submit">
       <x-button :disabled="maxnum!=sport.maxTickets" @click.native="submit" type="primary">提交数据</x-button>
     </div>
+
+    <x-footer/>
   </div>
 
 </template>
 
 <script>
 import { Sticky, Group, Cell, Card, Divider, Toast, XButton } from "vux";
-
+import XFooter from "./Footer";
 import XHeader from "./Header";
 import _checkList from "../js/checkList";
 import util from "../js/common";
@@ -53,7 +54,8 @@ export default {
     Card,
     Toast,
     XButton,
-    XHeader
+    XHeader,
+    XFooter
   },
   data() {
     return {
@@ -76,18 +78,7 @@ export default {
       return count.length;
     },
     openid() {
-      // return util.getUrlParam("openid");
       return this.userInfo.openid;
-    },
-    token() {
-      return util.getUrlParam("token");
-    },
-    // time() {
-    //   return new Date().getTime();
-    //   // return util.getUrlParam("timestamp");
-    // },
-    from() {
-      return util.getUrlParam("from");
     },
     curTimeStamp() {
       return (new Date().getTime() / 1000).toFixed(0);
@@ -156,9 +147,14 @@ export default {
     },
     submit() {
       this.getSignature();
-      let addStr = this.valueList
-        .filter(item => item)
-        .map((item, i) => this.getOriginIdx(i))
+      let arr = [];
+      this.valueList.forEach((item, i) => {
+        if (item) {
+          arr.push(i);
+        }
+      });
+      let addStr = arr
+        .map(item => this.getOriginIdx(item))
         .sort((a, b) => a - b);
       let params = {
         s: "/addon/Api/Api/addVoteInfo",
@@ -175,8 +171,7 @@ export default {
         country: this.userInfo.country,
         headimgurl: this.userInfo.headimgurl
       };
-      console.log(params);
-      return;
+
       let url = this.cdnUrl;
       this.$http
         .jsonp(url, {
@@ -224,7 +219,7 @@ export default {
         })
         .then(res => {
           var data = res.data;
-          if (data.status >= 1) {
+          if (data.status > 1) {
             this.$router.push("/info");
           }
         })

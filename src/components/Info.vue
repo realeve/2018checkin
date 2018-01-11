@@ -20,6 +20,7 @@
       <x-button @click.native="jump" type="default">查看票数</x-button>
     </div>
 
+    <x-footer/>
   </div>
 </template>
 
@@ -40,6 +41,7 @@ import {
 
 import XHeader from "./Header";
 import util from "../js/common";
+import XFooter from "./Footer";
 
 export default {
   components: {
@@ -52,7 +54,8 @@ export default {
     XInput,
     PopupPicker,
     Picker,
-    XHeader
+    XHeader,
+    XFooter
   },
   data() {
     return {
@@ -107,8 +110,7 @@ export default {
         return;
       }
 
-      let url =
-        this.$store.state.cdnUrl + "?s=/addon/Api/GoodVoice/setUserInfo";
+      let url = this.$store.state.cdnUrl + "?s=/addon/Api/Api/setUserInfo";
       this.$http
         .jsonp(url, {
           params
@@ -162,7 +164,12 @@ export default {
           this.showScore = data.status == 2;
           if (data.status == 0) {
             this.$router.push("/home");
+            return;
           }
+          this.user = data.user;
+          this.mobile = data.mobile;
+          this.detail = data.detail;
+          this.address = [data.prov, data.city, data.area];
         })
         .catch(e => {
           console.log(e);
