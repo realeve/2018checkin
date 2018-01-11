@@ -4,7 +4,7 @@
     <div class="score-content">
       <p class="info"> 票数汇总 </p>
       <p class="desc" v-if="isAdmin">信息填写: {{countInfo.address}} / {{countInfo.alls}}</p>
-      <p class="desc" v-if="isAdmin">投票情况: {{luckers}} 人选对{{sport.allTickets}}题</p>
+      <p class="desc" v-if="isAdmin">投票情况: {{luckers}} 人选对{{sport.maxTickets}}项</p>
       <p class="desc"> 你所投的{{voteNum.length}}位{{sport.name}}截止目前总票数如下 </p>
       <group>
         <cell v-for="(user,i) in voteNum" :title="(i+1)+'.'+user.vote_name" :value="user.vote_nums+' 票'" :key="i"></cell>
@@ -151,10 +151,10 @@ export default {
     }
   },
   created() {
-    if (this.openid == null) {
-      this.$router.push("/follow");
-      return;
-    }
+    // if (this.openid == null) {
+    //   this.$router.push("/follow");
+    //   return;
+    // }
     this.init();
   }
 };

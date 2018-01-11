@@ -15,7 +15,6 @@
       <div class="btn-wrapper margin-top-60">
         <div class="weui-btn weui-btn_default" @click="jump('home')">开始评价</div>
       </div>
-
     </div>
     <toast v-model="toast.show">{{ toast.msg }}</toast>
     <div class="canvas" id="home"></div>
@@ -62,8 +61,8 @@ export default {
   methods: {
     jump(router) {
       var video = document.querySelector("#mainvideo");
-      video.play();
-      video.pause();
+      // video.play();
+      // video.pause();
       this.$router.push(router);
     }
   },
@@ -91,9 +90,11 @@ export default {
   color: #fff;
   width: 100%;
   justify-content: center;
+  margin-bottom: 20px;
   .title {
     font-size: 20pt;
     text-align: center;
+    margin-top: 20px;
   }
   .desc {
     padding: 15px;

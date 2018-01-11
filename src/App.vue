@@ -2,9 +2,9 @@
   <div id="app">
     <!-- <v-header/> -->
     <loading v-model="isLoading" />
-    <router-view class="router-view" />
+    <router-view/>
     <!-- <v-foot/>  -->
-    <video id="mainvideo" x5-video-orientation="portrait" preload=auto x5-video-player-type="h5" x5-video-player-fullscreen="true" x-webkit-airplay="true" playsinline webkit-playsinline="true" src="http://www.cbpc.ltd/public/topic/2017invite/assets/video/portrait.mp4"></video>
+    <!-- <video id="mainvideo" x5-video-orientation="portrait" preload=auto x5-video-player-type="h5" x5-video-player-fullscreen="true" x-webkit-airplay="true" playsinline webkit-playsinline="true" src="http://www.cbpc.ltd/public/topic/2017invite/assets/video/portrait.mp4"></video> -->
   </div>
 </template>
 
@@ -224,18 +224,18 @@ export default {
 @import "assets/css/reset.css";
 @import "assets/css/slider.less";
 
-#mainvideo {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-}
+// #mainvideo {
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+//   width: 100%;
+//   min-height: 100vh;
+// }
 
-.router-view {
-  position: absolute !important;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
+// .router-view {
+//   position: absolute !important;
+//   width: 100%;
+//   min-height: 100vh;
+//   z-index: 1;
+// }
 </style>

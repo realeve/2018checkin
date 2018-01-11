@@ -4,7 +4,6 @@
     <toast v-model="toast.show" :type="toast.type">{{ toast.text }}</toast>
     <div class="vote" v-for="(item,i) in checkList" :key="item.id">
       <p class="title">{{i | chinese}}、{{item.title}}</p>
-
       <card>
         <div slot="content" class="card-content">
           <p class="desc">{{item.content}}</p>
@@ -225,20 +224,20 @@ export default {
           console.log(e);
         });
     },
-    auth() {
-      if (this.userInfo.openid == null || !util.isWeiXin()) {
-        this.$router.push("/follow");
-        return false;
-      }
-      return true;
-    },
+    // auth() {
+    //   if (this.userInfo.openid == null) {
+    //     this.$router.push("/follow");
+    //     return false;
+    //   }
+    //   return true;
+    // },
     init() {
-      if (!this.$store.state.isDebug) {
-        let passed = this.auth();
-        if (!passed) {
-          return;
-        }
-      }
+      // if (!this.$store.state.isDebug) {
+      //   let passed = this.auth();
+      //   if (!passed) {
+      //     return;
+      //   }
+      // }
       this.getStep();
       this.valueList = new Array(_checkList.length).fill(false);
     }
@@ -254,23 +253,23 @@ export default {
 
 .title {
   color: #444;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
   text-align: left;
   padding: 0 15px;
 }
 
 .switch {
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
 }
 
 .card-content {
-  margin: 10px 15px 20px 15px;
+  margin: 10px 15px 0px 15px;
   .desc {
     padding-top: 15px;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.5em;
     text-indent: 2.3em;
     letter-spacing: 0.15em;
