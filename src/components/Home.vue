@@ -3,8 +3,6 @@
     <x-header></x-header>
     <toast v-model="toast.show" :type="toast.type">{{ toast.text }}</toast>
     <div class="vote" v-for="(item,i) in checkList" :key="item.id">
-      <!-- <sticky :check-sticky-support="true">
-      </sticky> -->
       <p class="title">{{i | chinese}}、{{item.title}}</p>
 
       <card>

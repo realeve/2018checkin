@@ -29,7 +29,8 @@ const state = {
         isLogin: true,
         name: '2017年行业"十件大事"',
         maxTickets: 10,
-        allTickets: 15
+        allTickets: 15,
+        timeRange: "1月19日至24日"
     }
 };
 

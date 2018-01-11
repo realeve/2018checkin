@@ -2,8 +2,9 @@
   <div id="app">
     <!-- <v-header/> -->
     <loading v-model="isLoading" />
-    <router-view/>
+    <router-view class="router-view" />
     <!-- <v-foot/>  -->
+    <video id="mainvideo" x5-video-orientation="portrait" preload=auto x5-video-player-type="h5" x5-video-player-fullscreen="true" x-webkit-airplay="true" playsinline webkit-playsinline="true" src="http://www.cbpc.ltd/public/topic/2017invite/assets/video/portrait.mp4"></video>
   </div>
 </template>
 
@@ -222,4 +223,19 @@ export default {
 @import "~vux/src/styles/reset.less";
 @import "assets/css/reset.css";
 @import "assets/css/slider.less";
+
+#mainvideo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.router-view {
+  position: absolute !important;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
 </style>

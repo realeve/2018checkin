@@ -5,11 +5,27 @@ import FastClick from "fastclick";
 import App from "./App";
 import router from "./router/index";
 
+import store from "./store";
+
 import VueResource from "vue-resource";
 Vue.use(VueResource);
 
-import store from "./store";
+import { WechatPlugin, ToastPlugin } from "vux";
+Vue.use(WechatPlugin);
 
+Vue.use(ToastPlugin);
+
+// let VueTouch = require("vue-touch");
+// Vue.use(VueTouch, { name: "v-touch" });
+
+router.beforeEach(function(to, from, next) {
+    store.commit("updateLoadingStatus", { isLoading: true });
+    next();
+});
+
+router.afterEach(function(to) {
+    store.commit("updateLoadingStatus", { isLoading: false });
+});
 FastClick.attach(document.body);
 
 Vue.config.productionTip = false;
