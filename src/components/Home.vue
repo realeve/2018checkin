@@ -130,7 +130,9 @@ export default {
     getSignature() {
       this.time = new Date().getTime();
       this.signature = md5(
-        btoa("cbpctop10" + this.time + this.openid + this.openid.toUpperCase())
+        btoa(
+          this.sport.salt + this.time + this.openid + this.openid.toUpperCase()
+        )
       );
     },
     showToast(settings) {
@@ -153,27 +155,25 @@ export default {
       return this.checkList[newIdx].id;
     },
     submit() {
-      let artisanList = [];
-      let now = util.getNow();
-      let addStr = [];
-      this.valueList.forEach((item, i) => {
-        let idx = this.getOriginIdx(i);
-
-        if (item) {
-          artisanList.push(`('${this.openid}',${idx},'${now}')`);
-          addStr.push(idx);
-        }
-      });
-
       this.getSignature();
-
+      let addStr = this.valueList
+        .filter(item => item)
+        .map((item, i) => this.getOriginIdx(i))
+        .sort((a, b) => a - b);
       let params = {
+        s: "/addon/Api/Api/addVoteInfo",
+        sid: this.sport.id,
         timestamp: this.time,
         signature: this.signature,
-        openid: this.openid,
-        valstr: artisanList.join(","),
         addstr: addStr.join(","),
-        s: "/addon/GoodVoice/GoodVoice/addArtisanInfo"
+
+        openid: this.userInfo.openid,
+        nickname: this.userInfo.nickname,
+        sex: this.userInfo.sex,
+        city: this.userInfo.city,
+        province: this.userInfo.province,
+        country: this.userInfo.country,
+        headimgurl: this.userInfo.headimgurl
       };
       console.log(params);
       return;
@@ -214,9 +214,9 @@ export default {
     getStep() {
       let url = this.cdnUrl;
       let params = {
-        s: "/addon/GoodVoice/GoodVoice/isSetUserInfo",
+        s: "/addon/Api/Api/isSetUserInfo",
         openid: this.openid,
-        token: this.token
+        sid: this.sport.id
       };
       this.$http
         .jsonp(url, {
@@ -233,8 +233,7 @@ export default {
         });
     },
     auth() {
-      //
-      if (this.openid == null || !util.isWeiXin()) {
+      if (this.userInfo.openid == null || !util.isWeiXin()) {
         this.$router.push("/follow");
         return false;
       }

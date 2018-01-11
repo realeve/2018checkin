@@ -143,7 +143,7 @@ export default {
     }
   },
   created() {
-    if (this.token == null || this.openid == null || this.from != null) {
+    if (this.openid == null) {
       this.$router.push("/follow");
       return;
     }

@@ -23,6 +23,9 @@ const state = {
     isDebug: process.env.NODE_ENV !== "production",
     isPC: !isMobile(),
     sport: {
+        // encodeURI('2017年行业"十件大事"').replace(/%/g,'')
+        salt: "2017E5B9B4E8A18CE4B89A22E58D81E4BBB6E5A4A7E4BA8B22",
+        id: 1,
         isLogin: true,
         name: '2017年行业"十件大事"',
         maxTickets: 10,

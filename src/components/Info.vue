@@ -11,8 +11,7 @@
       <x-input title="姓名" v-model="user" placeholder="请填写收件人姓名" :required="true" :show-clear="true"></x-input>
       <x-input title="手机号" is-type="china-mobile" v-model="mobile" :show-clear="true" :required="true" placeholder="请输入手机号"></x-input>
       <x-address title="地址选择" v-model="address" raw-value :list="addressData" :required="true" value-text-align="left"></x-address>
-      <x-textarea title="详细地址" placeholder="请填写详细地址" v-model="detail" :required="true" :show-counter="false" :show-clear="true"
-        :rows="3"></x-textarea>
+      <x-textarea title="详细地址" placeholder="请填写详细地址" v-model="detail" :required="true" :show-counter="false" :show-clear="true" :rows="3"></x-textarea>
     </group>
     <toast v-model="toast.show" :type="toast.type">{{toast.text}}</toast>
 
@@ -25,199 +24,193 @@
 </template>
 
 <script>
-  import {
+import {
+  Toast,
+  XTextarea,
+  XAddress,
+  ChinaAddressV3Data,
+  XButton,
+  Group,
+  Cell,
+  XInput,
+  PopupPicker,
+  Picker,
+  Value2nameFilter as value2name
+} from "vux";
+
+import XHeader from "./Header";
+import util from "../js/common";
+
+export default {
+  components: {
+    Cell,
     Toast,
-    XTextarea,
-    XAddress,
-    ChinaAddressV3Data,
     XButton,
     Group,
-    Cell,
+    XAddress,
+    XTextarea,
     XInput,
     PopupPicker,
     Picker,
-    Value2nameFilter as value2name
-  } from 'vux'
-
-  import XHeader from './Header'
-  import util from '../js/common'
-
-  export default {
-    components: {
-      Cell,
-      Toast,
-      XButton,
-      Group,
-      XAddress,
-      XTextarea,
-      XInput,
-      PopupPicker,
-      Picker,
-      XHeader
+    XHeader
+  },
+  data() {
+    return {
+      addressData: ChinaAddressV3Data,
+      toast: {
+        show: false,
+        text: "",
+        type: ""
+      },
+      user: "",
+      mobile: "",
+      detail: "",
+      address: ["北京市", "市辖区", "东城区"],
+      showScore: false
+    };
+  },
+  computed: {
+    openid() {
+      return this.$store.state.userInfo.openid;
+    }
+  },
+  methods: {
+    getName(value) {
+      return value2name(value, ChinaAddressV3Data);
     },
-    data() {
-      return {
-        addressData: ChinaAddressV3Data,
-        toast: {
-          show: false,
-          text: '',
-          type: ''
-        },
-        user: '',
-        mobile: '',
-        detail: '',
-        address: ['北京市', '市辖区', '东城区'],
-        showScore: false
+    showToast(settings) {
+      this.toast.text = settings.text;
+      this.toast.type = settings.type;
+      this.toast.show = true;
+      setTimeout(() => {
+        this.toast.show = false;
+      }, 1500);
+    },
+    submit() {
+      let address = this.getName(this.address).split(" ");
+      let params = {
+        user: this.user,
+        mobile: this.mobile,
+        prov: address[0],
+        city: address[1],
+        area: address[2],
+        detail: this.detail,
+        openid: this.openid,
+        rec_time: util.getNow()
+      };
+
+      if (JSON.stringify(params).includes('""')) {
+        this.showToast({
+          text: "请填写个人信息",
+          type: "warn"
+        });
+        return;
       }
-    },
-    computed: {
-      openid() {
-        return util.getUrlParam('openid');
-      },
-      token() {
-        return util.getUrlParam('token');
-      },
-      from() {
-        return util.getUrlParam('from');
-      }
-    },
-    methods: {
-      getName(value) {
-        return value2name(value, ChinaAddressV3Data)
-      },
-      showToast(settings) {
-        this.toast.text = settings.text;
-        this.toast.type = settings.type;
-        this.toast.show = true;
-        setTimeout(() => {
-          this.toast.show = false;
-        }, 1500);
-      },
-      submit() {
-        let address = this.getName(this.address).split(' ');
-        let params = {
-          user: this.user,
-          mobile: this.mobile,
-          prov: address[0],
-          city: address[1],
-          area: address[2],
-          detail: this.detail,
-          openid: this.openid,
-          token: this.token,
-          rec_time: util.getNow()
-        }
 
-        if (JSON.stringify(params).includes('""')) {
-          this.showToast({
-            text: '请填写个人信息',
-            type: 'warn'
-          });
-          return;
-        }
-
-        let url = '//cbpc540.applinzi.com/index.php?s=/addon/GoodVoice/GoodVoice/setUserInfo';
-        this.$http.jsonp(
-          url, {
-            params
-          }
-        ).then((res) => {
+      let url =
+        this.$store.state.cdnUrl + "?s=/addon/Api/GoodVoice/setUserInfo";
+      this.$http
+        .jsonp(url, {
+          params
+        })
+        .then(res => {
           if (!res.ok) {
             this.showToast({
-              text: '数据提交失败',
-              type: 'warn'
+              text: "数据提交失败",
+              type: "warn"
             });
             return;
           }
           var data = res.data;
-          if (data.status > '0') {
+          if (data.status > "0") {
             this.showToast({
-              text: '提交数据成功',
-              type: 'success'
+              text: "提交数据成功",
+              type: "success"
             });
-            this.user = '';
-            this.mobile = '';
-            this.detail = '';
-            this.address = ['北京市', '市辖区', '东城区'];
+            this.user = "";
+            this.mobile = "";
+            this.detail = "";
+            this.address = ["北京市", "市辖区", "东城区"];
             // 跳转提交用户信息
             setTimeout(() => {
-              this.$router.push('/score');
+              this.$router.push("/score");
             }, 500);
           } else {
             this.showToast({
-              text: '请勿重复提交',
-              type: 'warn'
+              text: "请勿重复提交",
+              type: "warn"
             });
           }
-
-        }).catch((e) => {
+        })
+        .catch(e => {
           console.log(e);
         });
-      },
-      getStep() {
-        let url = '//cbpc540.applinzi.com/index.php?s=/addon/GoodVoice/GoodVoice/isSetUserInfo';
-        let params = {
-          openid: this.openid,
-          token: this.token
-        }
-        this.$http.jsonp(
-          url, {
-            params
-          }
-        ).then((res) => {
+    },
+    getStep() {
+      let url = this.$store.state.cdnUrl;
+      let params = {
+        s: "/addon/Api/Api/isSetUserInfo",
+        openid: this.openid,
+        sid: this.$store.state.sport.id
+      };
+      this.$http
+        .jsonp(url, {
+          params
+        })
+        .then(res => {
           var data = res.data;
           this.showScore = data.status == 2;
           if (data.status == 0) {
-            this.$router.push('/home');
+            this.$router.push("/home");
           }
-        }).catch((e) => {
+        })
+        .catch(e => {
           console.log(e);
         });
-      },
-      jump() {
-        this.$router.push('/score');
-      }
     },
-    created() {
-      if (this.token == null || this.openid == null || !util.isWeiXin() || this.from != null) {
-        this.$router.push('/follow');
-        return;
-      }
-      this.getStep();
+    jump() {
+      this.$router.push("/score");
     }
+  },
+  created() {
+    if (this.openid == null || !util.isWeiXin() || this.from != null) {
+      this.$router.push("/follow");
+      return;
+    }
+    this.getStep();
   }
-
+};
 </script>
 
 <style scoped lang="less">
-  .content {
-    padding: 15px;
-    padding-top: 10px;
-    .info {
-      display: flex;
-      justify-content: center;
-      font-size: 20px;
-      width: 100%;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 5px;
-    }
-    .desc {
-      padding-top: 5px;
-      color: #636563;
-      font-size: 14px;
-      text-indent: 2em;
-    }
+.content {
+  padding: 15px;
+  padding-top: 10px;
+  .info {
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
   }
-
-  .vote {
-    margin-bottom: 25px;
-    .vux-divider {
-      font-size: 24px;
-      color: #333;
-    }
+  .desc {
+    padding-top: 5px;
+    color: #636563;
+    font-size: 14px;
+    text-indent: 2em;
   }
+}
 
-  .submit {
-    margin: 10px 15px 25px 15px;
+.vote {
+  margin-bottom: 25px;
+  .vux-divider {
+    font-size: 24px;
+    color: #333;
   }
+}
 
+.submit {
+  margin: 10px 15px 25px 15px;
+}
 </style>
