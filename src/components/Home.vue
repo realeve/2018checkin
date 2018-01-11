@@ -1,19 +1,32 @@
 <template>
   <div>
     <x-header></x-header>
+    signature:{{signature}}
     <toast v-model="toast.show" :type="toast.type">{{ toast.text }}</toast>
     <div class="vote" v-for="(item,i) in checkList" :key="item.id">
-      <sticky :check-sticky-support="true">
-        <p class="title">{{item.id}}.{{item.title}}</p>
-      </sticky>
+      <!-- <sticky :check-sticky-support="true">
+      </sticky> -->
+      <p class="title">{{i | chinese}}、{{item.title}}</p>
 
       <card>
         <div slot="content" class="card-content">
-          <p class="desc">{{item.content}}
-          </p>
-          <x-switch :inline-desc="maxnum+'/'+ sport.maxTickets" :title="'投它一票'" v-model="valueList[i]" @on-change="checkMaxVotes(i)"></x-switch>
+          <p class="desc">{{item.content}}</p>
+          <div class="weui-cell switch">
+            <span>投它一票</span>
+            <span>{{progress}}</span>
+            <input type="checkbox" class="weui-switch" v-model="valueList[i]" @on-change="checkMaxVotes(i)">
+          </div>
         </div>
       </card>
+    </div>
+
+    <p style="margin-top:20px;" v-show="myChecked.length">我的选择</p>
+    <div class="weui-cells weui-cells_checkbox">
+      <label class="weui-cell weui-check_label" v-for="(item,i) in myChecked" :key="item.id">
+        <div class="weui-cell__bd">
+          <p>{{i+1}}.{{item.title}}</p>
+        </div>
+      </label>
     </div>
 
     <div class="submit">
@@ -24,21 +37,12 @@
 </template>
 
 <script>
-import {
-  Sticky,
-  Group,
-  Cell,
-  Card,
-  Divider,
-  XSwitch,
-  Toast,
-  XButton
-} from "vux";
+import { Sticky, Group, Cell, Card, Divider, Toast, XButton } from "vux";
 
 import XHeader from "./Header";
-import checkList from "../js/checkList";
+import _checkList from "../js/checkList";
 import util from "../js/common";
-
+import md5 from "md5";
 import { mapState } from "vuex";
 export default {
   components: {
@@ -47,7 +51,6 @@ export default {
     Cell,
     Divider,
     Card,
-    XSwitch,
     Toast,
     XButton,
     XHeader
@@ -61,35 +64,75 @@ export default {
         type: ""
       },
       voteNum: [],
-      checkList
+      checkList: util.randomArr(_checkList),
+      time: new Date().getTime(),
+      signature: ""
     };
   },
   computed: {
-    ...mapState(["cdnUrl", "sport"]),
+    ...mapState(["cdnUrl", "sport", "userInfo"]),
     maxnum() {
       let count = this.valueList.filter(item => item);
       return count.length;
     },
     openid() {
-      return util.getUrlParam("openid");
+      // return util.getUrlParam("openid");
+      return this.userInfo.openid;
     },
     token() {
       return util.getUrlParam("token");
     },
-    signature() {
-      return util.getUrlParam("signature");
-    },
-    time() {
-      return util.getUrlParam("timestamp");
-    },
+    // time() {
+    //   return new Date().getTime();
+    //   // return util.getUrlParam("timestamp");
+    // },
     from() {
       return util.getUrlParam("from");
     },
     curTimeStamp() {
       return (new Date().getTime() / 1000).toFixed(0);
+    },
+    progress() {
+      return this.maxnum + "/" + this.sport.maxTickets;
+    },
+    myChecked() {
+      let arr = [];
+      this.checkList.forEach((item, i) => {
+        if (this.valueList[i]) {
+          arr.push(item);
+        }
+      });
+      return arr;
+    }
+  },
+  filters: {
+    chinese(i) {
+      return [
+        "一",
+        "二",
+        "三",
+        "四",
+        "五",
+        "六",
+        "七",
+        "八",
+        "九",
+        "十",
+        "十一",
+        "十二",
+        "十三",
+        "十四",
+        "十五"
+      ][i];
     }
   },
   methods: {
+    getSignature() {
+      this.time = new Date().getTime();
+      this.signature = md5(
+        btoa("cbpctop10" + this.time + this.openid + this.openid.toUpperCase())
+      );
+    },
     showToast(settings) {
       this.toast.text = settings.text;
       this.toast.type = settings.type;
@@ -106,27 +149,34 @@ export default {
         });
       }
     },
+    getOriginIdx(newIdx) {
+      return this.checkList[newIdx].id;
+    },
     submit() {
       let artisanList = [];
       let now = util.getNow();
       let addStr = [];
       this.valueList.forEach((item, i) => {
+        let idx = this.getOriginIdx(i);
+
         if (item) {
-          artisanList.push(`('${this.token}','${this.openid}',${i},'${now}')`);
-          addStr.push(i);
+          artisanList.push(`('${this.openid}',${idx},'${now}')`);
+          addStr.push(idx);
         }
       });
 
+      this.getSignature();
+
       let params = {
-        openid: this.openid,
-        token: this.token,
-        valstr: artisanList.join(","),
-        addstr: addStr.join(","),
         timestamp: this.time,
         signature: this.signature,
+        openid: this.openid,
+        valstr: artisanList.join(","),
+        addstr: addStr.join(","),
         s: "/addon/GoodVoice/GoodVoice/addArtisanInfo"
       };
-
+      console.log(params);
+      return;
       let url = this.cdnUrl;
       this.$http
         .jsonp(url, {
@@ -183,22 +233,8 @@ export default {
         });
     },
     auth() {
-      if (
-        this.curTimeStamp - this.time > 600 ||
-        this.curTimeStamp == null ||
-        this.signature == null
-      ) {
-        this.checkList = [];
-        this.$router.push("/message");
-        return false;
-      }
       //
-      if (
-        this.token == null ||
-        this.openid == null ||
-        !util.isWeiXin() ||
-        this.from != null
-      ) {
+      if (this.openid == null || !util.isWeiXin()) {
         this.$router.push("/follow");
         return false;
       }
@@ -212,7 +248,7 @@ export default {
         }
       }
       this.getStep();
-      this.valueList = checkList.map(item => false);
+      this.valueList = new Array(_checkList.length).fill(false);
     }
   },
   created() {
@@ -222,6 +258,8 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import "../assets/css/switch.css";
+
 .title {
   color: #444;
   font-size: 22px;
@@ -229,13 +267,13 @@ export default {
   text-align: left;
   padding: 0 15px;
 }
-.vux-sticky {
-  .title {
-    background: rgba(255, 255, 255, 0.9);
-    border-bottom: 8px solid #fdfdfd;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-  }
+
+.switch {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
 }
+
 .card-content {
   margin: 10px 15px 20px 15px;
   .desc {
@@ -250,18 +288,12 @@ export default {
 
 .vote {
   margin-bottom: 25px;
-  // .vux-divider {
-  //   font-size: 24px;
-  //   color: #333;
-  //   line-height: 0;
-  //   background: rgba(248, 248, 248, 0.9);
-  //   height: 30px;
-  //   display: flex;
-  //   align-items: center;
-  // }
 }
 
 .submit {
   margin: 10px 15px 25px 15px;
+}
+.weui-cell__bd p {
+  text-align: left;
 }
 </style>

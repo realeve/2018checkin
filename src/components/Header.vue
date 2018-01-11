@@ -2,22 +2,12 @@
   <div class="header">
     <img class="logo" src="../assets/header2.jpg">
     <div class="title">
-      <h3>{{ msg }}</h3>
-      <h4 class="subtitle">{{ company }}</h4>
+      <h3>{{$store.state.sport.name}}评比候选事件</h3>
+      <h4 class="subtitle">(候选事件由系统自动随机排序，排名不分先后)</h4>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      msg: "2017年行业“十件大事”评比候选事件",
-      company: "(排名不分先后)"
-    };
-  }
-};
-</script>
 <style scoped lang="less">
 .header {
   text-align: center;
