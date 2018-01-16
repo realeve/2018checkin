@@ -51,8 +51,9 @@ export default {
     },
     // 跳转URL
     redirectUrl() {
-      return `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${this
-        .apiId}&redirect_uri=${encodeURIComponent(
+      return `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+        this.apiId
+      }&redirect_uri=${encodeURIComponent(
         this.url
       )}&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect`;
     },
@@ -106,7 +107,7 @@ export default {
           title: this.title, // 分享标题
           desc: this.title,
           link: this.shareUrl,
-          imgUrl: "http://cbpm.sinaapp.com/cdn/logo/cbpc.jpg",
+          imgUrl: "http://cbpm.sinaapp.com/cdn/logo/cbpm.jpg",
           type: "",
           dataUrl: "",
           success: function() {},
