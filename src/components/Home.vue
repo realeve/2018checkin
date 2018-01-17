@@ -63,7 +63,7 @@ export default {
         type: ""
       },
       voteNum: [],
-      checkList: util.randomArr(_checkList),
+      checkList: _checkList,//util.randomArr(_checkList),
       time: new Date().getTime(),
       signature: ""
     };
