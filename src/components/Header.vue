@@ -2,7 +2,7 @@
   <div class="header">
     <img class="logo" src="../assets/header2.jpg">
     <div class="title">
-      <h3>中国印钞造币行业2017年“十件大事”<br> 评选候选事件
+      <h3>中国印钞造币行业2017年<br>“十件大事”评选候选事件
       </h3>
       <h4 class="subtitle">（排名不分先后）</h4>
     </div>
@@ -20,9 +20,9 @@
     h4 {
       font-weight: 200;
     }
-    margin-top: -120px;
+    margin-top: -150px;
     color: #fff;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
     .subtitle {
       padding-top: 10px;
     }

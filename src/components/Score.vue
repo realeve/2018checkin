@@ -54,7 +54,10 @@ export default {
       return this.userInfo.openid;
     },
     isAdmin() {
-      return this.openid == "oW0w1v4qftC8xUP3q-MPIHtXB7hI";
+      return [
+        "oW0w1v4qftC8xUP3q-MPIHtXB7hI",
+        "oW0w1v28ykr6042MA2XnccUlMsVg"
+      ].includes(this.openid);
     }
   },
   methods: {
