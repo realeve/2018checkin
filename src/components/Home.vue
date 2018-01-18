@@ -63,7 +63,7 @@ export default {
         type: ""
       },
       voteNum: [],
-      checkList: _checkList,//util.randomArr(_checkList),
+      checkList: _checkList, //util.randomArr(_checkList),
       time: new Date().getTime(),
       signature: ""
     };
@@ -252,9 +252,9 @@ export default {
 @import "../assets/css/switch.css";
 
 .title {
-  color: #444;
+  color: #e84543;
   font-size: 20px;
-  font-weight: 500;
+  font-weight: bold;
   text-align: left;
   padding: 0 15px;
 }
@@ -270,7 +270,7 @@ export default {
   .desc {
     padding-top: 15px;
     font-size: 16px;
-    line-height: 1.5em;
+    line-height: 1.6em;
     text-indent: 2.3em;
     letter-spacing: 0.15em;
     text-align: left;

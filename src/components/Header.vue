@@ -2,8 +2,9 @@
   <div class="header">
     <img class="logo" src="../assets/header2.jpg">
     <div class="title">
-      <h3>{{$store.state.sport.name}}评比</h3>
-      <h4 class="subtitle">感谢您的参与</h4>
+      <h3>中国印钞造币行业2017年“十件大事”<br> 评选候选事件
+      </h3>
+      <h4 class="subtitle">（排名不分先后）</h4>
     </div>
   </div>
 </template>
@@ -13,7 +14,9 @@
   text-align: center;
   margin-bottom: 70px;
   .title {
-    h3,
+    h3 {
+      font-weight: bold;
+    }
     h4 {
       font-weight: 200;
     }
