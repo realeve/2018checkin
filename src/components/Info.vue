@@ -1,22 +1,24 @@
 <template>
   <div>
     <x-header></x-header>
+    <template v-if="!hasUserInfo">
+      <div class="content">
+        <p class="info">个人信息</p>
+        <p class="desc">本页面并非必填信息，仅用于活动结束抽奖时邮寄奖品，同时我们承诺不会将该信息用于其它用途，如不完整填写详细联系方式视为自动放弃抽奖资格。</p>
+      </div>
 
-    <div class="content">
-      <p class="info">个人信息</p>
-      <p class="desc">本页面并非必填信息，仅用于活动结束抽奖时邮寄奖品，同时我们承诺不会将该信息用于其它用途，如不完整填写详细联系方式视为自动放弃抽奖资格。</p>
-    </div>
-
-    <group label-width="4.5em" label-margin-right="2em" label-align="right">
-      <x-input title="姓名" v-model="user" placeholder="请填写收件人姓名" :required="true" :show-clear="true"></x-input>
-      <x-input title="手机号" is-type="china-mobile" v-model="mobile" :show-clear="true" :required="true" placeholder="请输入手机号"></x-input>
-      <x-address title="地址选择" v-model="address" raw-value :list="addressData" :required="true" value-text-align="left"></x-address>
-      <x-textarea title="详细地址" placeholder="请填写详细地址" v-model="detail" :required="true" :show-counter="false" :show-clear="true" :rows="3"></x-textarea>
-    </group>
+      <group label-width="4.5em" label-margin-right="2em" label-align="right">
+        <x-input title="姓名" v-model="user" placeholder="请填写收件人姓名" :required="true" :show-clear="true"></x-input>
+        <x-input title="手机号" is-type="china-mobile" v-model="mobile" :show-clear="true" :required="true" placeholder="请输入手机号"></x-input>
+        <x-address title="地址选择" v-model="address" raw-value :list="addressData" :required="true" value-text-align="left"></x-address>
+        <x-textarea title="详细地址" placeholder="请填写详细地址" v-model="detail" :required="true" :show-counter="false" :show-clear="true" :rows="3"></x-textarea>
+      </group>
+    </template>
+    <msg v-else title="个人信息提交成功" description="感谢你的参与" icon="success"></msg>
     <toast v-model="toast.show" :type="toast.type">{{toast.text}}</toast>
 
     <div class="submit">
-      <x-button @click.native="submit" type="primary">提交数据</x-button>
+      <x-button v-show="!hasUserInfo" @click.native="submit" type="primary">提交数据</x-button>
       <x-button @click.native="jump" type="default">查看票数</x-button>
     </div>
 
@@ -26,6 +28,8 @@
 
 <script>
 import {
+  Msg,
+  Divider,
   Toast,
   XTextarea,
   XAddress,
@@ -55,7 +59,9 @@ export default {
     PopupPicker,
     Picker,
     XHeader,
-    XFooter
+    XFooter,
+    Msg,
+    Divider
   },
   data() {
     return {
@@ -69,7 +75,8 @@ export default {
       mobile: "",
       detail: "",
       address: ["北京市", "市辖区", "东城区"],
-      showScore: false
+      showScore: false,
+      hasUserInfo: false
     };
   },
   computed: {
@@ -118,7 +125,7 @@ export default {
         .then(res => {
           if (!res.ok) {
             this.showToast({
-              text: "数据提交失败",
+              text: "数据失败",
               type: "warn"
             });
             return;
@@ -126,17 +133,19 @@ export default {
           var data = res.data;
           if (data.status > "0") {
             this.showToast({
-              text: "提交数据成功",
+              text: "提交成功",
               type: "success"
             });
-            this.user = "";
-            this.mobile = "";
-            this.detail = "";
-            this.address = ["北京市", "市辖区", "东城区"];
+            this.hasUserInfo = true;
+            // this.user = "";
+            // this.mobile = "";
+            // this.detail = "";
+            // this.address = ["北京市", "市辖区", "东城区"];
+
             // 跳转提交用户信息
-            setTimeout(() => {
-              this.$router.push("/score");
-            }, 500);
+            // setTimeout(() => {
+            //   this.$router.push("/score");
+            // }, 500);
           } else {
             this.showToast({
               text: "请勿重复提交",
