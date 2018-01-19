@@ -56,7 +56,8 @@ export default {
     isAdmin() {
       return [
         "oW0w1v4qftC8xUP3q-MPIHtXB7hI",
-        "oW0w1v28ykr6042MA2XnccUlMsVg"
+        "oW0w1v28ykr6042MA2XnccUlMsVg",
+        "oW0w1vxG2WkLPHu6d1tgZVQ_SyC8"
       ].includes(this.openid);
     }
   },
