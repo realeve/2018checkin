@@ -14,7 +14,7 @@
         <x-textarea title="详细地址" placeholder="请填写详细地址" v-model="detail" :required="true" :show-counter="false" :show-clear="true" :rows="3"></x-textarea>
       </group>
     </template>
-    <msg v-else title="个人信息提交成功" description="感谢你的参与" icon="success"></msg>
+    <msg v-else :title="title" :description="desc" icon="success"></msg>
     <toast v-model="toast.show" :type="toast.type">{{toast.text}}</toast>
 
     <div class="submit">
@@ -76,7 +76,11 @@ export default {
       detail: "",
       address: ["北京市", "市辖区", "东城区"],
       showScore: false,
-      hasUserInfo: false
+      hasUserInfo: false,
+      msg: {
+        title: "个人信息提交成功",
+        desc: "感谢你的参与"
+      }
     };
   },
   computed: {
@@ -131,30 +135,21 @@ export default {
             return;
           }
           var data = res.data;
-          if (data.status > "0") {
-            this.showToast({
-              text: "提交成功",
-              type: "success"
-            });
-            this.hasUserInfo = true;
-            // this.user = "";
-            // this.mobile = "";
-            // this.detail = "";
-            // this.address = ["北京市", "市辖区", "东城区"];
 
-            // 跳转提交用户信息
-            // setTimeout(() => {
-            //   this.$router.push("/score");
-            // }, 500);
-          } else {
-            this.showToast({
-              text: "请勿重复提交",
-              type: "warn"
-            });
-          }
+          this.showToast({
+            text: "提交成功",
+            type: "success"
+          });
+          this.msg.title = "个人信息提交成功";
+          this.msg.desc = "感谢你的参与";
+
+          this.hasUserInfo = true;
         })
         .catch(e => {
           console.log(e);
+
+          this.msg.title = "信息提交失败";
+          this.msg.desc = "请将个人信息及以下信息提交至管理员：" + this.openid;
         });
     },
     getStep() {

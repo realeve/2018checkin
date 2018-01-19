@@ -27,6 +27,7 @@
 
     <div class="submit">
       <x-button :disabled="maxnum!=sport.maxTickets" @click.native="submit" type="primary">提交数据</x-button>
+      <x-button @click.native="addInfo" type="default">填写个人信息</x-button>
     </div>
 
     <x-footer/>
@@ -240,6 +241,9 @@ export default {
       // }
       this.getStep();
       this.valueList = new Array(_checkList.length).fill(false);
+    },
+    addInfo() {
+      this.$router.push("/info");
     }
   },
   created() {
