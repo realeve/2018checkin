@@ -34,7 +34,7 @@ import {
   Toast,
   XTextarea,
   XAddress,
-  ChinaAddressV3Data,
+  // ChinaAddressV4Data,
   XButton,
   Group,
   Cell,
@@ -43,6 +43,8 @@ import {
   Picker,
   Value2nameFilter as value2name
 } from "vux";
+
+import ChinaAddressV4Data from "./vux_china_address_v4.json";
 
 import XHeader from "./Header";
 import util from "../js/common";
@@ -66,7 +68,7 @@ export default {
   },
   data() {
     return {
-      addressData: ChinaAddressV3Data,
+      addressData: ChinaAddressV4Data,
       toast: {
         show: false,
         text: "",
@@ -93,7 +95,7 @@ export default {
   },
   methods: {
     getName(value) {
-      return value2name(value, ChinaAddressV3Data);
+      return value2name(value, ChinaAddressV4Data);
     },
     showToast(settings) {
       this.toast.text = settings.text;
