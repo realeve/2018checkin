@@ -183,7 +183,7 @@ export default {
       return false;
     },
     recordReadNum() {
-      if (location.href.includes("localhost")) {
+      if (location.href.indexOf("localhost") > -1) {
         return;
       }
       let url = window.location.href.split("?")[0];

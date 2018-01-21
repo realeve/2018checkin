@@ -119,7 +119,7 @@ export default {
         rec_time: util.getNow()
       };
 
-      if (JSON.stringify(params).includes('""')) {
+      if (JSON.stringify(params).indexOf('""') > 0) {
         this.showToast({
           text: "请填写个人信息",
           type: "warn"
@@ -198,10 +198,6 @@ export default {
     }
   },
   created() {
-    // if (this.openid == null) {
-    //   this.$router.push("/follow");
-    //   return;
-    // }
     this.getStep();
   }
 };
