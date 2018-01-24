@@ -43,6 +43,9 @@ import _checkList from "../js/checkList";
 import util from "../js/common";
 import md5 from "md5";
 import { mapState } from "vuex";
+
+import moment from "moment";
+
 export default {
   components: {
     Sticky,
@@ -92,6 +95,9 @@ export default {
         }
       });
       return arr;
+    },
+    isSportEnd() {
+      return moment().format("YYYY-MM-DD") > this.sport.endDate;
     }
   },
   filters: {
@@ -219,6 +225,8 @@ export default {
           var data = res.data;
           if (data.status > 1) {
             this.$router.push("/info");
+          } else if (this.isSportEnd) {
+            this.$router.push("message");
           }
         })
         .catch(e => {

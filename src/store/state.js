@@ -31,7 +31,8 @@ const state = {
         maxTickets: 10,
         allTickets: 15,
         timeRange: "1月19日至24日",
-        loadWXInfo: true
+        loadWXInfo: true,
+        endDate: '2018-01-24'
     }
 };
 
