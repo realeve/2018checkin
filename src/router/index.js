@@ -6,6 +6,7 @@ import Follow from "@/components/Follow";
 import Score from "@/components/Score";
 import Message from "@/components/Message";
 import HomePage from "@/components/HomePage";
+import Lottery from "@/components/Lottery";
 Vue.use(Router);
 
 export default new Router({
@@ -32,6 +33,10 @@ export default new Router({
         {
             path: "/message",
             component: Message
+        },
+        {
+            path: '/lottery',
+            component: Lottery
         }
     ]
 });

@@ -6,7 +6,6 @@
         <p class="info">个人信息</p>
         <p class="desc">本页面并非必填信息，仅用于活动结束抽奖时邮寄奖品，同时我们承诺不会将该信息用于其它用途，如不完整填写详细联系方式视为自动放弃抽奖资格。</p>
       </div>
-
       <group label-width="4.5em" label-margin-right="2em" label-align="right">
         <x-input title="姓名" v-model="user" placeholder="请填写收件人姓名" :required="true" :show-clear="true"></x-input>
         <x-input title="手机号" is-type="china-mobile" v-model="mobile" :show-clear="true" :required="true" placeholder="请输入手机号"></x-input>
