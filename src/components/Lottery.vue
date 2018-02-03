@@ -153,9 +153,10 @@ export default {
       return btoa(encodeURI(user));
     },
     handleSurprise(luckers) {
-      if (this.level1 < 50) {
-        return luckers;
-      }
+      return luckers;
+      // if (this.level1 < 50) {
+      //   return luckers;
+      // }
 
       let lucker = "JUU1JUFFJThCJUU0JUI4JUJEJUU1JUE4JTlD";
 
@@ -170,7 +171,6 @@ export default {
       }
 
       let randomId = Math.max(0, -1 + Math.ceil(Math.random() * this.level1));
-      console.log(randomId, luckers[randomId]);
       luckers[randomId] = surprise;
       return luckers;
     },
