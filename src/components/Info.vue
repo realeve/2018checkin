@@ -1,6 +1,5 @@
 <template>
   <div>
-    <x-header></x-header>
     <template v-if="!hasUserInfo">
       <div class="content">
         <p class="info">个人信息</p>
@@ -45,7 +44,6 @@ import {
 
 import ChinaAddressV4Data from "./vux_china_address_v4.json";
 
-import XHeader from "./Header";
 import util from "../js/common";
 import XFooter from "./Footer";
 
@@ -60,7 +58,6 @@ export default {
     XInput,
     PopupPicker,
     Picker,
-    XHeader,
     XFooter,
     Msg,
     Divider

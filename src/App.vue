@@ -197,7 +197,7 @@ export default {
     }
   },
   created() {
-    this.title = this.sport.name + "微信答题活动";
+    this.title = this.sport.name + "微信签到";
     // 开发模式下，初始化值
     if (process.env.NODE_ENV == "development") {
       this.userInfo = {
@@ -225,18 +225,8 @@ export default {
 @import "assets/css/reset.css";
 @import "assets/css/slider.less";
 
-// #mainvideo {
-//   position: absolute;
-//   left: 0;
-//   top: 0;
-//   width: 100%;
-//   min-height: 100vh;
-// }
-
-// .router-view {
-//   position: absolute !important;
-//   width: 100%;
-//   min-height: 100vh;
-//   z-index: 1;
-// }
+#app {
+  background: #fbf7eb;
+  height: 100%;
+}
 </style>

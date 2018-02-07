@@ -27,10 +27,10 @@ const state = {
         salt: "2017E5B9B4E8A18CE4B89A22E58D81E4BBB6E5A4A7E4BA8B22",
         id: 1,
         isLogin: true,
-        name: '2017年中国印钞造币行业"十件大事"',
+        name: '中国印钞造币',
         maxTickets: 10,
         allTickets: 15,
-        timeRange: "1月19日至24日",
+        timeRange: "",
         loadWXInfo: true,
         endDate: '2018-01-24'
     }
