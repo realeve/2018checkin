@@ -89,10 +89,11 @@ export default {
           const data = res.data;
           this.day = data.check_count;
           this.title = data.msg;
-          if (data.status == -1) {
-            this.isSuccess = false;
-            this.errInfo = `今日已签到，共签到${this.day}天，请明天再来。`;
-          } else if (data.status == 0) {
+          // if (data.status == -1) {
+          //   this.isSuccess = false;
+          //   this.errInfo = `今日已签到，共签到${this.day}天，请明天再来。`;
+          // } else
+          if (data.status == 0) {
             this.isSuccess = false;
             this.errInfo = "签到失败，请稍后重试";
           }
