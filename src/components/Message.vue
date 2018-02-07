@@ -1,11 +1,14 @@
 <template>
   <div class="main">
     <div class="content">
-      <msg v-if="isSuccess" :title="title" :description="desc" icon="success"></msg>
-      <msg v-else :title="title" :description="errInfo" icon="warn"></msg>
-      <div>
-        <label>测试信息：{{url}}</label>
+      <div v-if="showScribe">
+        <msg title="中国印钞造币" description="请先长按二维码关注公众号后参加活动。" icon="warn"></msg>
+        <img src="../assets/qrcode.jpg" style="width:100%;display:block;">
       </div>
+      <template v-else>
+        <msg v-if="isSuccess" :title="title" :description="desc" icon="success"></msg>
+        <msg v-else :title="title" :description="errInfo" icon="warn"></msg>
+      </template>
     </div>
     <x-footer/>
   </div>
@@ -27,10 +30,11 @@ export default {
     return {
       day: "1",
       startDay: "2018年2月7日",
-      url: "",
       title: "签到成功",
       isSuccess: true,
-      errInfo: ""
+      errInfo: "",
+      isShareLink: window.location.href.indexOf("from=") > -1,
+      showScribe: false
     };
   },
   computed: {
@@ -40,6 +44,25 @@ export default {
     ...mapState(["userInfo", "cdnUrl", "sport"])
   },
   methods: {
+    isScribe() {
+      let url = this.cdnUrl;
+      let params = {
+        s: "/addon/Api/Api/getUnid",
+        openid: this.userInfo.openid
+      };
+      this.$http
+        .jsonp(url, {
+          params
+        })
+        .then(res => {
+          const data = res.data;
+          if (!data.subscribe == 1) {
+            this.showScribe = true;
+            return;
+          }
+          this.checkIn();
+        });
+    },
     checkIn() {
       let url = this.cdnUrl;
       let params = {
@@ -63,8 +86,7 @@ export default {
           this.title = data.msg;
           if (data.status == -1) {
             this.isSuccess = false;
-            this.errInfo =
-              `今日已签到，共签到${this.day}天，请明天再来。`;
+            this.errInfo = `今日已签到，共签到${this.day}天，请明天再来。`;
           } else if (data.status == 0) {
             this.isSuccess = false;
             this.errInfo = "签到失败，请稍后重试";
@@ -78,8 +100,12 @@ export default {
     }
   },
   mounted() {
-    this.checkIn();
-    this.url = window.location.href;
+    // 如果从正常渠道进入
+    if (!this.isShareLink) {
+      this.checkIn();
+    } else {
+      this.isScribe();
+    }
   }
 };
 </script>

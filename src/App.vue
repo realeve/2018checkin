@@ -70,7 +70,7 @@ export default {
       if (!val) {
         return;
       }
-      this.title = `我刚刚参加了${this.sport.name}投票活动，你也来参与吧`;
+      this.title = `我刚刚参加了${this.sport.name}每日签到活动，你也来参与吧`;
       this.initWxShare();
     }
   },
