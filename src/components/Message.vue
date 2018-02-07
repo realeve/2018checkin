@@ -39,7 +39,9 @@ export default {
   },
   computed: {
     desc() {
-      return `自${this.startDay}起，你已成功签到${this.day}天。`;
+      return `自${this.startDay}起你已签到${
+        this.day
+      }次，今日已成功签到，谢谢你的坚持。`;
     },
     ...mapState(["userInfo", "cdnUrl", "sport"])
   },
@@ -64,6 +66,9 @@ export default {
         });
     },
     checkIn() {
+      if (this.userInfo.openid == "") {
+        return;
+      }
       let url = this.cdnUrl;
       let params = {
         s: "/addon/Api/Api/checkIn",
