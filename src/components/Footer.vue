@@ -1,6 +1,6 @@
 <template>
   <footer :style="{color}">
-    {{year}} &copy; 中国印钞造币总公司
+    <p v-show="checkCount">当前共签到{{checkCount}}次.</p> {{year}} &copy; 中国印钞造币总公司
   </footer>
 </template>
 <style lang="less" scoped>
@@ -12,6 +12,11 @@ footer {
 </style>
 <script>
 export default {
+  data() {
+    return {
+      checkCount: 0
+    };
+  },
   computed: {
     year() {
       let date = new Date();
@@ -22,6 +27,20 @@ export default {
     color: {
       default: "#999"
     }
+  },
+  mounted() {
+    let url = this.$store.state.cdnUrl;
+    let params = {
+      s: "/addon/Api/Api/checkinCount"
+    };
+    this.$http
+      .jsonp(url, {
+        params
+      })
+      .then(res => {
+        const data = res.data;
+        this.checkCount = data[0].nums;
+      });
   }
 };
 </script>
