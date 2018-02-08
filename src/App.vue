@@ -102,6 +102,10 @@ export default {
       this.$wechat.config(config);
     },
     initWxShare() {
+      // 正式环境微信载入
+      if (window.location.href.includes("#/list")) {
+        return;
+      }
       this.$wechat.ready(() => {
         let option = {
           title: this.title, // 分享标题
@@ -214,6 +218,9 @@ export default {
       };
     } else {
       // 正式环境微信载入
+      if (window.location.href.includes("#/list")) {
+        return;
+      }
       this.wxInit();
     }
   }
