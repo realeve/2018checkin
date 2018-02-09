@@ -145,7 +145,9 @@ export default {
       if (typeof wx_userinfo != "undefined") {
         userInfo = JSON.parse(wx_userinfo);
         this.userInfo = userInfo;
-        return;
+        if (this.userInfo.openid != "") {
+          return;
+        }
       }
       this.getWXInfo();
     },
