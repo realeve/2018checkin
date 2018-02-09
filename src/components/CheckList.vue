@@ -1,6 +1,9 @@
 <template>
   <div class="main">
-    <h2 class="title">中国印钞造币每日微信签到用户列表</h2>
+    <div class="title">
+      <h1>中国印钞造币每日微信签到用户列表</h1>
+      <h3>当前签到总人数:{{totalItem}}<br>(数据缓存：20分钟)</h3>
+    </div>
     <el-table :data="userList" style="width: 100%" stripe height="80vh" v-loading="loading">
       <el-table-column prop="idx" label="序号">
       </el-table-column>
@@ -44,8 +47,8 @@ export default {
     return {
       userList: [],
       curPage: 1,
-      totalItem: 100,
-      loading: false
+      totalItem: 0,
+      loading: true
     };
   },
   computed: {
