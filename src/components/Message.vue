@@ -45,6 +45,11 @@ export default {
     },
     ...mapState(["userInfo", "cdnUrl", "sport"])
   },
+  watch: {
+    "userInfo.openid"(val) {
+      this.checkIn();
+    }
+  },
   methods: {
     isScribe() {
       let url = this.cdnUrl;
@@ -107,10 +112,10 @@ export default {
   },
   mounted() {
     // 如果从正常渠道进入
-    if (!this.isShareLink) {
-      this.checkIn();
-    } else {
+    if (this.isShareLink) {
       this.isScribe();
+    } else {
+      this.checkIn();
     }
   }
 };
