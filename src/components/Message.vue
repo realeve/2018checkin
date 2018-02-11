@@ -6,8 +6,11 @@
         <img src="../assets/qrcode.jpg" style="width:100%;display:block;">
       </div>
       <template v-else>
-        <msg v-if="isSuccess" :title="title" :description="desc" icon="success"></msg>
-        <msg v-else :title="title" :description="errInfo" icon="warn"></msg>
+        <msg v-if="hideMessage" title="获取身份中" description="正在获取用户唯一身份信息，请稍后。" icon="waiting"></msg>
+        <template v-else>
+          <msg v-if="isSuccess" :title="title" :description="desc" icon="success"></msg>
+          <msg v-else :title="title" :description="errInfo" icon="warn"></msg>
+        </template>
       </template>
     </div>
     <x-footer/>
@@ -43,7 +46,12 @@ export default {
         this.day
       }次，今日已成功签到，谢谢你的坚持。`;
     },
-    ...mapState(["userInfo", "cdnUrl", "sport"])
+    ...mapState(["userInfo", "cdnUrl", "sport"]),
+    hideMessage() {
+      return (
+        !Reflect.has(this.userInfo, "openid") || this.userInfo.openid == ""
+      );
+    }
   },
   watch: {
     "userInfo.openid"(val) {
@@ -52,6 +60,9 @@ export default {
   },
   methods: {
     isScribe() {
+      if (this.hideMessage) {
+        return;
+      }
       let url = this.cdnUrl;
       let params = {
         s: "/addon/Api/Api/getUnid",
@@ -71,7 +82,7 @@ export default {
         });
     },
     checkIn() {
-      if (this.userInfo.openid == "") {
+      if (this.hideMessage) {
         return;
       }
       let url = this.cdnUrl;
