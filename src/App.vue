@@ -141,14 +141,20 @@ export default {
     // 获取微信用户信息（昵称，地区）
     getWXUserInfo() {
       let userInfo;
-      let wx_userinfo = localStorage["wx_userinfo"];
-      if (typeof wx_userinfo != "undefined") {
-        userInfo = JSON.parse(wx_userinfo);
-        this.userInfo = userInfo;
-        if (this.userInfo.openid != "") {
-          return;
+      if (window.localStorage) {
+        let wx_userinfo = localStorage.getItem("wx_userinfo");
+        if (
+          typeof wx_userinfo != "undefined" &&
+          wx_userinfo.indexOf("{") > -1
+        ) {
+          userInfo = JSON.parse(wx_userinfo);
+          this.userInfo = userInfo;
+          if (this.userInfo.openid != "") {
+            return;
+          }
         }
       }
+
       this.getWXInfo();
     },
     getWXInfo() {
@@ -162,7 +168,7 @@ export default {
         })
         .then(res => {
           this.userInfo = res.data;
-          if (Reflect.get(res.data, "nickname")) {
+          if ("undefined" != res.data.openid) {
             localStorage.setItem("wx_userinfo", JSON.stringify(res.data));
           }
         });

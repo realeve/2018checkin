@@ -49,7 +49,7 @@ export default {
     ...mapState(["userInfo", "cdnUrl", "sport"]),
     hideMessage() {
       return (
-        !Reflect.has(this.userInfo, "openid") || this.userInfo.openid == ""
+        typeof this.userInfo.openid == "undefined" || this.userInfo.openid == ""
       );
     }
   },
