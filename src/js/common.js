@@ -83,7 +83,6 @@ let randomArr = arr => {
 const handleErr = e => {
   const rec_time = getNow();
   let errName = "";
-
   switch (e.name) {
     case "ReferenceError":
       errName = "找不到对象";

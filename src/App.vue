@@ -14,6 +14,8 @@ import { Loading } from "vux";
 import { querystring } from "vux";
 
 import { mapState } from "vuex";
+import util from "./js/common";
+
 export default {
   name: "app",
   components: {
@@ -74,7 +76,7 @@ export default {
         this.title = `我刚刚参加了${this.sport.name}每日签到活动，你也来参与吧`;
         this.initWxShare();
       } catch (e) {
-        this.recordError();
+        this.recordError(e);
       }
     }
   },
@@ -108,7 +110,7 @@ export default {
     },
     initWxShare() {
       // 正式环境微信载入
-      if (window.location.href.includes("#/list")) {
+      if (window.location.href.indexOf("#/list") > -1) {
         return;
       }
       this.$wechat.ready(() => {
@@ -255,7 +257,7 @@ export default {
     try {
       this.init();
     } catch (e) {
-      this.recordError();
+      this.recordError(e);
     }
   }
 };
