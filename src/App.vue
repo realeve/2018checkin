@@ -69,15 +69,11 @@ export default {
   },
   watch: {
     shouldInitShare(val) {
-      try {
-        if (!val) {
-          return;
-        }
-        this.title = `我刚刚参加了${this.sport.name}每日签到活动，你也来参与吧`;
-        this.initWxShare();
-      } catch (e) {
-        this.recordError(e);
+      if (!val) {
+        return;
       }
+      this.title = `我刚刚参加了${this.sport.name}每日签到活动，你也来参与吧`;
+      this.initWxShare();
     }
   },
   methods: {
@@ -214,20 +210,6 @@ export default {
         params
       });
     },
-    recordError(e) {
-      let err = util.handleErr(e);
-      console.log(err);
-      if (err.err_url.indexOf("localhost") > -1) {
-        return;
-      }
-      const params = Object.assign({}, err, {
-        network_type: this.$store.state.network_type,
-        s: "/addon/Api/Api/rec_error"
-      });
-      this.$http.jsonp(this.cdnUrl, {
-        params
-      });
-    },
     init() {
       this.title = this.sport.name + "微信签到";
       // 开发模式下，初始化值
@@ -254,11 +236,7 @@ export default {
     }
   },
   created() {
-    try {
-      this.init();
-    } catch (e) {
-      this.recordError(e);
-    }
+    this.init();
   }
 };
 </script>
