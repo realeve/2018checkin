@@ -48,17 +48,40 @@ export default {
     },
     ...mapState(["userInfo", "cdnUrl", "sport"]),
     hideMessage() {
-      return (
-        typeof this.userInfo.openid == "undefined" || this.userInfo.openid == ""
-      );
+      try {
+        const status =
+          !Reflect.has(this.userInfo, "openid") || this.userInfo.openid == "";
+        return status;
+      } catch (e) {
+        this.recordError(e);
+        return true;
+      }
     }
   },
   watch: {
     "userInfo.openid"(val) {
-      this.checkIn();
+      try {
+        this.checkIn();
+      } catch (e) {
+        this.recordError(e);
+      }
     }
   },
   methods: {
+    recordError(e) {
+      let err = util.handleErr(e);
+      console.log(err);
+      if (err.err_url.indexOf("localhost") > -1) {
+        return;
+      }
+      const params = Object.assign({}, err, {
+        network_type: this.$store.state.network_type,
+        s: "/addon/Api/Api/rec_error"
+      });
+      this.$http.jsonp(this.cdnUrl, {
+        params
+      });
+    },
     isScribe() {
       if (this.hideMessage) {
         return;
@@ -124,10 +147,14 @@ export default {
   },
   mounted() {
     // 如果从正常渠道进入
-    if (this.isShareLink) {
-      this.isScribe();
-    } else {
-      this.checkIn();
+    try {
+      if (this.isShareLink) {
+        this.isScribe();
+      } else {
+        this.checkIn();
+      }
+    } catch (e) {
+      this.recordError(e);
     }
   }
 };

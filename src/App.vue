@@ -67,11 +67,15 @@ export default {
   },
   watch: {
     shouldInitShare(val) {
-      if (!val) {
-        return;
+      try {
+        if (!val) {
+          return;
+        }
+        this.title = `我刚刚参加了${this.sport.name}每日签到活动，你也来参与吧`;
+        this.initWxShare();
+      } catch (e) {
+        this.recordError();
       }
-      this.title = `我刚刚参加了${this.sport.name}每日签到活动，你也来参与吧`;
-      this.initWxShare();
     }
   },
   methods: {
@@ -96,7 +100,8 @@ export default {
         jsApiList: [
           "onMenuShareAppMessage",
           "onMenuShareTimeline",
-          "hideMenuItems"
+          "hideMenuItems",
+          "getNetworkType"
         ]
       };
       this.$wechat.config(config);
@@ -119,9 +124,9 @@ export default {
         };
         this.$wechat.onMenuShareAppMessage(option);
         this.$wechat.onMenuShareTimeline(option);
-        this.$wechat.onMenuShareQQ(option);
-        this.$wechat.onMenuShareWeibo(option);
-        this.$wechat.onMenuShareQZone(option);
+        // this.$wechat.onMenuShareQQ(option);
+        // this.$wechat.onMenuShareWeibo(option);
+        // this.$wechat.onMenuShareQZone(option);
 
         // 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
         this.$wechat.hideMenuItems({
@@ -136,25 +141,25 @@ export default {
             "menuItem:share:email"
           ]
         });
+        this.$wechat.getNetworkType({
+          success: function(res) {
+            var networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
+            this.$store.commit("setNetworktype", networkType);
+          }
+        });
       });
     },
     // 获取微信用户信息（昵称，地区）
     getWXUserInfo() {
       let userInfo;
-      if (window.localStorage) {
-        let wx_userinfo = localStorage.getItem("wx_userinfo");
-        if (
-          typeof wx_userinfo != "undefined" &&
-          wx_userinfo.indexOf("{") > -1
-        ) {
-          userInfo = JSON.parse(wx_userinfo);
-          this.userInfo = userInfo;
-          if (this.userInfo.openid != "") {
-            return;
-          }
+      let wx_userinfo = localStorage["wx_userinfo"];
+      if (typeof wx_userinfo != "undefined") {
+        userInfo = JSON.parse(wx_userinfo);
+        this.userInfo = userInfo;
+        if (this.userInfo.openid != "") {
+          return;
         }
       }
-
       this.getWXInfo();
     },
     getWXInfo() {
@@ -168,7 +173,7 @@ export default {
         })
         .then(res => {
           this.userInfo = res.data;
-          if ("undefined" != res.data.openid) {
+          if (Reflect.get(res.data, "nickname")) {
             localStorage.setItem("wx_userinfo", JSON.stringify(res.data));
           }
         });
@@ -206,30 +211,51 @@ export default {
       this.$http.jsonp(this.cdnUrl, {
         params
       });
+    },
+    recordError(e) {
+      let err = util.handleErr(e);
+      console.log(err);
+      if (err.err_url.indexOf("localhost") > -1) {
+        return;
+      }
+      const params = Object.assign({}, err, {
+        network_type: this.$store.state.network_type,
+        s: "/addon/Api/Api/rec_error"
+      });
+      this.$http.jsonp(this.cdnUrl, {
+        params
+      });
+    },
+    init() {
+      this.title = this.sport.name + "微信签到";
+      // 开发模式下，初始化值
+      if (process.env.NODE_ENV == "development") {
+        this.userInfo = {
+          openid: "oW0w1v4qftC8xUP3q-MPIHtXB7hI",
+          nickname: "宾不厌诈",
+          sex: 1,
+          language: "zh_CN",
+          city: "成都",
+          province: "四川",
+          country: "中国",
+          headimgurl:
+            "http://wx.qlogo.cn/mmhead/Q3auHgzwzM7RSAYiaxiaC1lOZYicWic9YZKEFJ2TKEfh3pFJibLvf7IxdLQ/0",
+          privilege: []
+        };
+      } else {
+        // 正式环境微信载入
+        if (window.location.href.indexOf("#/list") > -1) {
+          return;
+        }
+        this.wxInit();
+      }
     }
   },
   created() {
-    this.title = this.sport.name + "微信签到";
-    // 开发模式下，初始化值
-    if (process.env.NODE_ENV == "development") {
-      this.userInfo = {
-        openid: "oW0w1v4qftC8xUP3q-MPIHtXB7hI",
-        nickname: "宾不厌诈",
-        sex: 1,
-        language: "zh_CN",
-        city: "成都",
-        province: "四川",
-        country: "中国",
-        headimgurl:
-          "http://wx.qlogo.cn/mmhead/Q3auHgzwzM7RSAYiaxiaC1lOZYicWic9YZKEFJ2TKEfh3pFJibLvf7IxdLQ/0",
-        privilege: []
-      };
-    } else {
-      // 正式环境微信载入
-      if (window.location.href.includes("#/list")) {
-        return;
-      }
-      this.wxInit();
+    try {
+      this.init();
+    } catch (e) {
+      this.recordError();
     }
   }
 };
