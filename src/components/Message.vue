@@ -48,8 +48,11 @@ export default {
     },
     ...mapState(["userInfo", "cdnUrl", "sport"]),
     hideMessage() {
+      // const status = !Reflect.has(this.userInfo, "openid") || this.userInfo.openid == "";
       const status =
-        !Reflect.has(this.userInfo, "openid") || this.userInfo.openid == "";
+        typeof this.userInfo.openid == "undefined"
+          ? this.userInfo.openid == ""
+          : this.userInfo.openid;
       return status;
     }
   },
