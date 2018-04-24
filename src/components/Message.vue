@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       day: "1",
-      startDay: "2018年2月7日",
+      startDay: "2018年4月17日",
       title: "签到成功",
       isSuccess: true,
       errInfo: "",
