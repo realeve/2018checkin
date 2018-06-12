@@ -13,13 +13,17 @@
           <div v-html="scope.row.err_desc"></div>
         </template>
       </el-table-column>
-      <el-table-column prop="network_type" align="left" label="网络类型">
-      </el-table-column>
+      <!-- <el-table-column prop="network_type" align="left" label="网络类型">
+      </el-table-column> -->
       <el-table-column prop="device_platform" align="left" label="手机类型">
       </el-table-column>
       <el-table-column prop="device_user_agent" align="left" label="浏览器版本">
       </el-table-column>
       <el-table-column prop="device_app_version" align="left" label="微信版本信息">
+      </el-table-column>
+      <el-table-column prop="ip" align="left" label="IP">
+      </el-table-column>
+      <el-table-column prop="remark" align="left" label="store">
       </el-table-column>
       <el-table-column prop="rec_time" align="left" label="记录时间">
       </el-table-column>
