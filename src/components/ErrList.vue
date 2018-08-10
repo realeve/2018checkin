@@ -36,6 +36,7 @@
 
 <script>
 import util from "../js/common";
+import * as db from "../js/db";
 import XFooter from "./Footer";
 
 import { mapState } from "vuex";
@@ -57,28 +58,16 @@ export default {
     ...mapState(["cdnUrl"])
   },
   methods: {
-    init() {
-      let url = this.cdnUrl;
-      let params = {
-        s: "/addon/Api/Api/err_list"
-      };
-      this.loading = true;
-      this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(res => {
-          this.totalItem = res.data.length;
-          this.checkinList = res.data.map((item, idx) => {
-            item.idx = idx + 1;
-            return item;
-          });
-          this.handleCurrentChange();
-          this.loading = false;
-        })
-        .catch(e => {
-          this.loading = false;
-        });
+    init: async function() {
+      let res = await db.getCommonErrorLog().finally(e => {
+        this.loading = false;
+      });
+      this.totalItem = res.rows;
+      this.checkinList = res.data.map((item, idx) => {
+        item.idx = idx + 1;
+        return item;
+      });
+      this.handleCurrentChange();
     },
     handleCurrentChange() {
       const start = 30 * (this.curPage - 1);

@@ -45,6 +45,8 @@ import {
 import ChinaAddressV4Data from "./vux_china_address_v4.json";
 
 import util from "../js/common";
+import * as db from "../js/db";
+
 import XFooter from "./Footer";
 
 export default {
@@ -104,7 +106,7 @@ export default {
     reback() {
       window.location.href = "http://mp.weixin.qq.com/s/vFPSwUi1RxD1FJJqTzK93w";
     },
-    submit() {
+    submit: async function() {
       let address = this.getName(this.address).split(" ");
       let params = {
         user: this.user,
@@ -114,32 +116,25 @@ export default {
         area: address[2],
         detail: this.detail,
         openid: this.openid,
-        rec_time: util.getNow()
+        rec_time: util.getNow(),
+        user2: this.user,
+        mobile2: this.mobile,
+        prov2: address[0],
+        city2: address[1],
+        area2: address[2],
+        detail2: this.detail,
+        rec_time2: util.getNow()
       };
-
-      // if (JSON.stringify(params).indexOf('""') > 0) {
-      //   this.showToast({
-      //     text: "请填写个人信息",
-      //     type: "warn"
-      //   });
-      //   return;
-      // }
-
-      let url = this.$store.state.cdnUrl + "?s=/addon/Api/Api/setUserInfo";
-      this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(res => {
-          if (!res.ok) {
+      await db
+        .addCbpmCheckinUserAddress(params)
+        .then(({ data }) => {
+          if (data[0].affected_rows == 0) {
             this.showToast({
               text: "数据失败",
               type: "warn"
             });
             return;
           }
-          var data = res.data;
-
           this.showToast({
             text: "提交成功",
             type: "success"
@@ -164,32 +159,17 @@ export default {
             JSON.stringify(params);
         });
     },
-    getStep() {
-      let url = this.$store.state.cdnUrl;
-      let params = {
-        s: "/addon/Api/Api/isSetUserInfo",
-        openid: this.openid,
-        sid: this.$store.state.sport.id
-      };
-      this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(res => {
-          var data = res.data;
-          this.showScore = data.status == 2;
-          if (data.status == 0) {
-            this.$router.push("/home");
-            return;
-          }
-          this.user = data.user;
-          this.mobile = data.mobile;
-          this.detail = data.detail;
-          this.address = [data.prov, data.city, data.area];
-        })
-        .catch(e => {
-          console.log(e);
-        });
+    getStep: async function() {
+      let res = await db.getCbpmVoteUserAddress(this.openid);
+      var data = res.data[0];
+      if (typeof data == "undefined") {
+        this.$router.push("/home");
+        return;
+      }
+      this.user = data.user;
+      this.mobile = data.mobile;
+      this.detail = data.detail;
+      this.address = [data.prov, data.city, data.area];
     },
     jump() {
       this.$router.push("/score");

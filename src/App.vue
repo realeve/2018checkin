@@ -4,7 +4,6 @@
     <loading v-model="isLoading" />
     <router-view/>
     <!-- <v-foot/>  -->
-    <!-- <video id="mainvideo" x5-video-orientation="portrait" preload=auto x5-video-player-type="h5" x5-video-player-fullscreen="true" x-webkit-airplay="true" playsinline webkit-playsinline="true" src="http://www.cbpc.ltd/public/topic/2017invite/assets/video/portrait.mp4"></video> -->
   </div>
 </template>
 
@@ -15,7 +14,7 @@ import { querystring } from "vux";
 
 import { mapState } from "vuex";
 import util from "./js/common";
-
+import * as db from "./js/db";
 export default {
   name: "app",
   components: {
@@ -78,15 +77,18 @@ export default {
   },
   methods: {
     wxPermissionInit() {
-      let params = {
-        s: "/addon/Api/Api/getSignature",
-        url: this.url
-      };
-      return this.$http
-        .jsonp(this.cdnUrl, {
-          params
-        })
-        .then(res => res.data);
+      axios({
+        params: {
+          s: "/weixin/signature",
+          url: this.url
+        }
+      }).then(data => {
+        this.wxReady(data);
+        this.initWxShare();
+        this.recordReadNum();
+        this.shouldShare = true;
+        this.isLoading = false;
+      });
     },
     wxReady(obj) {
       let config = {
@@ -161,31 +163,24 @@ export default {
       this.getWXInfo();
     },
     getWXInfo() {
-      let params = {
-        s: "/addon/Api/Api/getUserInfo",
-        code: this.code
-      };
-      this.$http
-        .jsonp(this.cdnUrl, {
-          params
-        })
-        .then(res => {
-          this.userInfo = res.data;
-          if (Reflect.get(res.data, "nickname")) {
-            localStorage.setItem("wx_userinfo", JSON.stringify(res.data));
-          }
-        });
+      axios({
+        params: {
+          s: "/weixin/user_info",
+          code: this.code
+        }
+      }).then(data => {
+        this.userInfo = data;
+        if (typeof data.nickname != "undefined") {
+          localStorage.setItem("wx_userinfo", JSON.stringify(data));
+        }
+        this.isLoading = false;
+      });
     },
     wxInit() {
       if (this.sport.loadWXInfo && !this.needRedirect()) {
         this.getWXUserInfo();
       }
-      this.wxPermissionInit().then(res => {
-        this.shouldShare = true;
-        this.wxReady(res);
-        this.initWxShare();
-        this.recordReadNum();
-      });
+      this.wxPermissionInit();
     },
     needRedirect() {
       let hrefArr = window.location.href.split("?");
@@ -201,14 +196,7 @@ export default {
       if (location.href.indexOf("localhost") > -1) {
         return;
       }
-      let url = window.location.href.split("?")[0];
-      let params = {
-        s: "/addon/Api/Api/recordReadNum",
-        url
-      };
-      this.$http.jsonp(this.cdnUrl, {
-        params
-      });
+      db.addCommonVisitCount(window.location.href.split("?")[0]);
     },
     init() {
       this.title = this.sport.name + "微信签到";
@@ -226,6 +214,7 @@ export default {
             "http://wx.qlogo.cn/mmhead/Q3auHgzwzM7RSAYiaxiaC1lOZYicWic9YZKEFJ2TKEfh3pFJibLvf7IxdLQ/0",
           privilege: []
         };
+        this.isLoading = false;
       } else {
         // 正式环境微信载入
         if (window.location.href.indexOf("#/list") > -1) {

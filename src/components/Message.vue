@@ -6,7 +6,7 @@
         <img src="../assets/qrcode.jpg" style="width:100%;display:block;">
       </div>
       <template v-else>
-        <msg v-if="hideMessage" title="获取身份中" description="正在获取用户唯一身份信息，请稍后。" icon="waiting"></msg>
+        <msg v-if="hideMessage&&hide" title="获取身份中" description="正在获取用户唯一身份信息，请稍后。" icon="waiting"></msg>
         <template v-else>
           <msg v-if="isSuccess" :title="title" :description="desc" icon="success"></msg>
           <msg v-else :title="title" :description="errInfo" icon="warn"></msg>
@@ -19,6 +19,8 @@
 
 <script>
 import util from "../js/common";
+import * as db from "../js/db";
+
 import { Msg } from "vux";
 import XFooter from "./Footer";
 
@@ -37,7 +39,8 @@ export default {
       isSuccess: true,
       errInfo: "",
       isShareLink: window.location.href.indexOf("from=") > -1,
-      showScribe: false
+      showScribe: false,
+      hide: true
     };
   },
   computed: {
@@ -48,7 +51,6 @@ export default {
     },
     ...mapState(["userInfo", "cdnUrl", "sport"]),
     hideMessage() {
-      // const status = !Reflect.has(this.userInfo, "openid") || this.userInfo.openid == "";
       const status =
         typeof this.userInfo.openid == "undefined" ||
         this.userInfo.openid == "";
@@ -61,29 +63,20 @@ export default {
     }
   },
   methods: {
-    isScribe() {
+    isScribe: async function() {
       if (this.hideMessage) {
         return;
       }
-      let url = this.cdnUrl;
-      let params = {
-        s: "/addon/Api/Api/getUnid",
-        openid: this.userInfo.openid
-      };
-      this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(res => {
-          const data = res.data;
-          if (!data.subscribe == 1) {
-            this.showScribe = true;
-            return;
-          }
-          this.checkIn();
-        });
+      let res = await db.getUnId(this.userInfo.openid);
+      const data = res.data;
+      if (!data.subscribe == 1) {
+        this.showScribe = true;
+        return;
+      }
+      this.checkIn();
     },
-    checkIn() {
+    checkIn: async function() {
+      let ip = await db.getIP();
       if (this.hideMessage) {
         return;
       }
@@ -97,34 +90,51 @@ export default {
         city: this.userInfo.city,
         province: this.userInfo.province,
         country: this.userInfo.country,
-        headimgurl: this.userInfo.headimgurl
+        headimgurl: this.userInfo.headimgurl,
+        ip
       };
-      this.$http
-        .jsonp(url, {
-          params
-        })
-        .then(res => {
-          const data = res.data;
-          this.day = data.check_count;
-          this.title = data.msg;
-          // if (data.status == -1) {
-          //   this.isSuccess = false;
-          //   this.errInfo = `今日已签到，共签到${this.day}天，请明天再来。`;
-          // } else
-          if (data.status == 0) {
-            this.title = "签到失败";
-            this.isSuccess = false;
-            this.errInfo = "签到失败，请稍后重试";
-          }
-        })
-        .catch(e => {
-          this.title = "签到失败";
-          this.errInfo = "签到失败，请稍后重试";
-          this.isSuccess = false;
-        });
+      let { data } = await db.isNeedCheckin(this.userInfo.openid).catch(e => {
+        this.title = "签到失败";
+        this.errInfo = "签到失败，请稍后重试";
+        this.isSuccess = false;
+      });
+
+      if (data.length == 0) {
+        // insert;
+        params.check_count = 1;
+        params.rec_date = util.getNow();
+        db.addCbpmCheckin(params);
+        this.title = "签到成功";
+        this.day = 1;
+        return;
+      }
+
+      let { needVote, check_count } = data[0];
+
+      if (needVote == 0) {
+        this.title = "今日已签到";
+        this.day = check_count;
+        return;
+      }
+      db.setCbpmCheckin({
+        ip,
+        rec_date: util.getNow(),
+        check_count: check_count + 1,
+        openid: this.userInfo.openid
+      });
+      this.day = check_count + 1;
+      this.title = "签到成功";
+    },
+    updating() {
+      this.hide = false;
+      this.isSuccess = false;
+      this.title = "升级中...";
+      this.errInfo = "系统升级中，预计于9:40分完成，请稍后重试";
     }
   },
   mounted() {
+    // this.updating();
+    // return;
     if (this.isShareLink) {
       this.isScribe();
     } else {

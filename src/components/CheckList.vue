@@ -4,7 +4,7 @@
       <h1>中国印钞造币每日微信签到用户列表</h1>
       <h3>当前签到总人数:{{totalItem}}<br>(数据缓存：5分钟)</h3>
       <div class="search-box">
-        <el-input style="width:200px;" clearable size="medium" placeholder="昵称搜索" prefix-icon="el-icon-search" v-model="filterName"/>
+        <el-input style="width:200px;" clearable size="medium" placeholder="昵称搜索" prefix-icon="el-icon-search" v-model="filterName" />
       </div>
     </div>
     <el-table :data="userList" style="width: 100%" stripe height="80vh" v-loading="loading">
@@ -41,6 +41,7 @@ import util from "../js/common";
 import XFooter from "./Footer";
 
 import { mapState } from "vuex";
+import * as db from "../js/db";
 
 export default {
   components: {
@@ -56,9 +57,9 @@ export default {
       filterName: ""
     };
   },
-  watch:{
-    filterName(){
-      this.searchUser()
+  watch: {
+    filterName() {
+      this.searchUser();
     }
   },
   computed: {
@@ -66,37 +67,29 @@ export default {
   },
   methods: {
     init() {
-      let url = this.cdnUrl;
-      let params = {
-        s: "/addon/Api/Api/checkinList",
-        sid: this.sport.id,
-        page: this.curPage
-      };
-      this.loading = true;
-      this.$http
-        .jsonp(url, {
-          params
-        })
+      db
+        .getCbpmCheckinList()
         .then(res => {
-          this.totalItem = res.data.length;
+          this.totalItem = res.rows;
           this.checkinList = res.data.map((item, idx) => {
             item.sex = item.sex == 0 ? "未知" : item.sex == 1 ? "男" : "女";
             item.idx = idx + 1;
             return item;
           });
           this.handleCurrentChange();
-          this.loading = false;
         })
-        .catch(e => {
+        .finally(e => {
           this.loading = false;
         });
     },
-    searchUser(){
-      if(this.filterName.length>0){
-        this.userList = this.checkinList.filter(item=>item.nickname.includes(this.filterName));
-      }else{
+    searchUser() {
+      if (this.filterName.length > 0) {
+        this.userList = this.checkinList.filter(item =>
+          item.nickname.includes(this.filterName)
+        );
+      } else {
         this.handleCurrentChange();
-      }      
+      }
     },
     handleCurrentChange() {
       const start = 500 * (this.curPage - 1);

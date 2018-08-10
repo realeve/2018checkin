@@ -11,6 +11,7 @@ footer {
 }
 </style>
 <script>
+import * as db from "../js/db";
 export default {
   data() {
     return {
@@ -28,19 +29,9 @@ export default {
       default: "#999"
     }
   },
-  mounted() {
-    let url = this.$store.state.cdnUrl;
-    let params = {
-      s: "/addon/Api/Api/checkinCount"
-    };
-    this.$http
-      .jsonp(url, {
-        params
-      })
-      .then(res => {
-        const data = res.data;
-        this.checkCount = data[0].nums;
-      });
+  mounted: async function() {
+    let { data } = await db.getCbpmCheckin();
+    this.checkCount = data[0].nums;
   }
 };
 </script>
