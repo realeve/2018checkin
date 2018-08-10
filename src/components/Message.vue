@@ -109,9 +109,8 @@ export default {
         return;
       }
 
-      let { needVote, check_count } = data[0];
-
-      if (needVote == 0) {
+      let { needvote, check_count } = data[0];
+      if (needvote == 0) {
         this.title = "今日已签到";
         this.day = check_count;
         return;

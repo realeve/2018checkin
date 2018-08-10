@@ -14,6 +14,7 @@ import { querystring } from "vux";
 
 import { mapState } from "vuex";
 import util from "./js/common";
+import * as axios from "axios";
 import * as db from "./js/db";
 export default {
   name: "app",
@@ -78,6 +79,8 @@ export default {
   methods: {
     wxPermissionInit() {
       axios({
+        url: "//api.cbpc.ltd/",
+        method: "get",
         params: {
           s: "/weixin/signature",
           url: this.url
@@ -164,6 +167,8 @@ export default {
     },
     getWXInfo() {
       axios({
+        url: "//api.cbpc.ltd/",
+        method: "get",
         params: {
           s: "/weixin/user_info",
           code: this.code
