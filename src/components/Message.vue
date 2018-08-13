@@ -6,7 +6,8 @@
         <img src="../assets/qrcode.jpg" style="width:100%;display:block;">
       </div>
       <template v-else>
-        <msg v-if="hideMessage&&hide" title="获取身份中" description="正在获取用户唯一身份信息，请稍后。" icon="waiting"></msg>
+        <!-- <div>{{userInfo}}</div> -->
+        <msg v-if="hideMessage" title="获取身份中" description="正在获取用户唯一身份信息，请稍后。" icon="waiting"></msg>
         <template v-else>
           <msg v-if="isSuccess" :title="title" :description="desc" icon="success"></msg>
           <msg v-else :title="title" :description="errInfo" icon="warn"></msg>
@@ -39,8 +40,7 @@ export default {
       isSuccess: true,
       errInfo: "",
       isShareLink: window.location.href.indexOf("from=") > -1,
-      showScribe: false,
-      hide: true
+      showScribe: false
     };
   },
   computed: {
@@ -51,15 +51,17 @@ export default {
     },
     ...mapState(["userInfo", "cdnUrl", "sport"]),
     hideMessage() {
-      const status =
-        typeof this.userInfo.openid == "undefined" ||
-        this.userInfo.openid == "";
-      return status;
+      // return this.userInfo.openid;
+      return (
+        typeof this.userInfo.openid == "undefined" || this.userInfo.openid == ""
+      );
     }
   },
   watch: {
-    "userInfo.openid"(val) {
-      this.checkIn();
+    hideMessage(val) {
+      if (this.userInfo.openid) {
+        this.checkIn();
+      }
     }
   },
   methods: {
@@ -77,9 +79,9 @@ export default {
     },
     checkIn: async function() {
       let ip = await db.getIP();
-      if (this.hideMessage) {
-        return;
-      }
+      // if (this.hideMessage) {
+      //   return;
+      // }
       let url = this.cdnUrl;
       let params = {
         s: "/addon/Api/Api/checkIn",
@@ -93,11 +95,18 @@ export default {
         headimgurl: this.userInfo.headimgurl,
         ip
       };
+      // console.log(this.userInfo.openid);
       let { data } = await db.isNeedCheckin(this.userInfo.openid).catch(e => {
         this.title = "签到失败";
         this.errInfo = "签到失败，请稍后重试";
         this.isSuccess = false;
       });
+
+      console.log(data);
+
+      if (!this.isSuccess) {
+        return;
+      }
 
       if (data.length == 0) {
         // insert;
@@ -136,9 +145,14 @@ export default {
     // return;
     if (this.isShareLink) {
       this.isScribe();
-    } else {
+    }
+
+    if (!this.hideMessage) {
       this.checkIn();
     }
+    //  else {
+    //   this.checkIn();
+    // }
   }
 };
 </script>

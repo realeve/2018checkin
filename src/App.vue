@@ -85,7 +85,7 @@ export default {
           s: "/weixin/signature",
           url: this.url
         }
-      }).then(data => {
+      }).then(({ data }) => {
         this.wxReady(data);
         this.initWxShare();
         this.recordReadNum();
@@ -144,10 +144,11 @@ export default {
             "menuItem:share:email"
           ]
         });
+        let that = this;
         this.$wechat.getNetworkType({
           success: function(res) {
             var networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
-            this.$store.commit("setNetworktype", networkType);
+            that.$store.commit("setNetworktype", networkType);
           }
         });
       });
@@ -173,7 +174,7 @@ export default {
           s: "/weixin/user_info",
           code: this.code
         }
-      }).then(data => {
+      }).then(({ data }) => {
         this.userInfo = data;
         if (typeof data.nickname != "undefined") {
           localStorage.setItem("wx_userinfo", JSON.stringify(data));
@@ -183,7 +184,8 @@ export default {
     },
     wxInit() {
       if (this.sport.loadWXInfo && !this.needRedirect()) {
-        this.getWXUserInfo();
+        // this.getWXUserInfo();
+        this.getWXInfo();
       }
       this.wxPermissionInit();
     },
@@ -205,28 +207,31 @@ export default {
     },
     init() {
       this.title = this.sport.name + "微信签到";
+      this.wxInit();
       // 开发模式下，初始化值
-      if (process.env.NODE_ENV == "development") {
-        this.userInfo = {
-          openid: "oW0w1v4qftC8xUP3q-MPIHtXB7hI",
-          nickname: "宾不厌诈",
-          sex: 1,
-          language: "zh_CN",
-          city: "成都",
-          province: "四川",
-          country: "中国",
-          headimgurl:
-            "http://wx.qlogo.cn/mmhead/Q3auHgzwzM7RSAYiaxiaC1lOZYicWic9YZKEFJ2TKEfh3pFJibLvf7IxdLQ/0",
-          privilege: []
-        };
-        this.isLoading = false;
-      } else {
-        // 正式环境微信载入
-        if (window.location.href.indexOf("#/list") > -1) {
-          return;
-        }
-        this.wxInit();
-      }
+      // if (process.env.NODE_ENV == "development") {
+      //   setTimeout(() => {
+      //     this.userInfo = {
+      //       openid: "oW0w1v4qftC8xUP3q-MPIHtXB7hI",
+      //       nickname: "宾不厌诈",
+      //       sex: 1,
+      //       language: "zh_CN",
+      //       city: "成都",
+      //       province: "四川",
+      //       country: "中国",
+      //       headimgurl:
+      //         "http://wx.qlogo.cn/mmhead/Q3auHgzwzM7RSAYiaxiaC1lOZYicWic9YZKEFJ2TKEfh3pFJibLvf7IxdLQ/0",
+      //       privilege: []
+      //     };
+      //     this.isLoading = false;
+      //   }, 7000);
+      // } else {
+      //   // 正式环境微信载入
+      //   if (window.location.href.indexOf("#/list") > -1) {
+      //     return;
+      //   }
+      //   this.wxInit();
+      // }
     }
   },
   created() {
