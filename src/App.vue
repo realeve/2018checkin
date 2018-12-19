@@ -2,7 +2,7 @@
   <div id="app">
     <!-- <v-header/> -->
     <loading v-model="isLoading" />
-    <router-view/>
+    <router-view />
     <!-- <v-foot/>  -->
   </div>
 </template>
@@ -207,31 +207,33 @@ export default {
     },
     init() {
       this.title = this.sport.name + "微信签到";
-      this.wxInit();
+
+      // this.wxInit();
+
       // 开发模式下，初始化值
-      // if (process.env.NODE_ENV == "development") {
-      //   setTimeout(() => {
-      //     this.userInfo = {
-      //       openid: "oW0w1v4qftC8xUP3q-MPIHtXB7hI",
-      //       nickname: "宾不厌诈",
-      //       sex: 1,
-      //       language: "zh_CN",
-      //       city: "成都",
-      //       province: "四川",
-      //       country: "中国",
-      //       headimgurl:
-      //         "http://wx.qlogo.cn/mmhead/Q3auHgzwzM7RSAYiaxiaC1lOZYicWic9YZKEFJ2TKEfh3pFJibLvf7IxdLQ/0",
-      //       privilege: []
-      //     };
-      //     this.isLoading = false;
-      //   }, 7000);
-      // } else {
-      //   // 正式环境微信载入
-      //   if (window.location.href.indexOf("#/list") > -1) {
-      //     return;
-      //   }
-      //   this.wxInit();
-      // }
+      if (process.env.NODE_ENV == "development") {
+        setTimeout(() => {
+          this.userInfo = {
+            openid: "oW0w1v4qftC8xUP3q-MPIHtXB7hI",
+            nickname: "宾不厌诈",
+            sex: 1,
+            language: "zh_CN",
+            city: "成都",
+            province: "四川",
+            country: "中国",
+            headimgurl:
+              "http://wx.qlogo.cn/mmhead/Q3auHgzwzM7RSAYiaxiaC1lOZYicWic9YZKEFJ2TKEfh3pFJibLvf7IxdLQ/0",
+            privilege: []
+          };
+          this.isLoading = false;
+        }, 7000);
+      } else {
+        // 正式环境微信载入
+        if (window.location.href.indexOf("#/list") > -1) {
+          return;
+        }
+        this.wxInit();
+      }
     }
   },
   created() {
